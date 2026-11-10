@@ -1,0 +1,85 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1.55cm]{geometry}
+\usepackage{booktabs,tabularx,array,enumitem,xcolor,hyperref,titlesec}
+\definecolor{accent}{HTML}{1F497D}
+\hypersetup{colorlinks=true,urlcolor=accent,linkcolor=accent}
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
+\setlist{nosep,leftmargin=*}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\begin{document}
+\begin{center}
+{\LARGE\bfseries Heidi Systems}\\[-1pt]
+{\large Berlin Hausverwaltungen Lead Generation: Approach and Data Validation}\\
+Presented by Kesari Venkata Ashok Reddy\\
+\href{mailto:kvenkataashokreddy2806@gmail.com}{kvenkataashokreddy2806@gmail.com}
+\quad 10 November 2026\\
+\href{https://docs.google.com/spreadsheets/d/17fmN5F_6Fj-DWNf3XDGJreVLjX2GBru-b7V5Q3dp2e0/edit?usp=sharing}{Lead sheet} \quad
+\href{https://github.com/Ashokreddy2806/Property\_Management\_Berlin}{Code repository}
+\end{center}
+
+\section{Summary}
+The objective was to identify Berlin property managers that may need a modern metering and energy-operations provider. The final workbook contains 266 private leads plus 25 Strategic accounts, from 2,709 raw rows after 1,588 duplicate merges. Leads are split into Tier A/B/C: 12/90/164. It includes 157 named contacts, 34 LinkedIn matches, and 33 private leads with known units.
+
+\section{Approach and workflow}
+\begin{enumerate}
+\item Discover companies through Google organic and Places search plus Berlin directories.
+\item Clean names and encoding, normalize domains, verify Berlin postcodes, and deduplicate.
+\item Check each website and separate live company sites from Directory-only rows.
+\item Crawl company pages including Impressum, contact, services, team, portal, and careers pages.
+\item Extract KPI values only when supported by verbatim evidence from the company's own pages.
+\item Score fit using the configured weighted rules and assign Tier A, B, C, or Strategic.
+\item Find decision makers, business emails, and search-result LinkedIn matches.
+\item Run deterministic quality gates, export CSV/XLSX, and retain source provenance.
+\end{enumerate}
+
+\section{Agents}
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule Agent & Task & Input $\rightarrow$ output\\\midrule
+Discovery classifier & Classify search candidates and exclude non-target entities & Search rows $\rightarrow$ qualified candidates\\
+Enrichment/KPI extractor & Extract structured KPIs with evidence quotes & Company pages $\rightarrow$ KPI profile\\
+Contact finder & Select decision makers and resolve contact signals & Profiles/search results $\rightarrow$ contact fields\\
+\bottomrule
+\end{tabularx}
+
+There are three LLM agents. Crawling, deduplication, link checking, scoring, auditing, and export are deterministic code because repeatable rules are more reliable and cheaper for those tasks.
+
+\section{Tools and data sources}
+\begin{tabularx}{\linewidth}{@{}p{2.8cm}p{3.2cm}Y@{}}
+\toprule Tool & Pipeline stage & Specific use and output\\\midrule
+Serper API & Discovery; contacts & Google Organic and Places results; search-result LinkedIn verification\\
+Tavily API & Discovery & Supplementary Berlin property-management search results\\
+Gelbe Seiten; Das Örtliche & Discovery & Directory candidates and phone-outreach records\\
+Requests; BeautifulSoup & Crawl & Fetch and parse company pages, Impressum, team, service, and contact content\\
+NVIDIA Nemotron LLM & Agents 1--3 & Candidate classification, KPI extraction with evidence, and contact reasoning\\
+Hunter API; dnspython & Contacts & Personal email finding, verifier status, and MX-domain checks\\
+ftfy; RapidFuzz & Cleaning & Mojibake repair, name matching, and duplicate detection at threshold 92\\
+openpyxl; csv; gspread & Export & Excel/CSV workbook generation and optional Google Sheets publication\\
+pytest & QA & Regression tests for known pipeline cases and validation helpers\\
+\bottomrule
+\end{tabularx}
+
+\section{Qualifying KPIs and scoring}
+\begin{tabularx}{\linewidth}{@{}lY@{}}
+\toprule KPI & Why it matters for a metering provider\\\midrule
+Portfolio size & Larger portfolios create more metering deployment potential (up to 30 points).\\
+Management type & WEG and rental management indicate broader operational reach (up to 10).\\
+Digital maturity & Portals and software indicate integration readiness (up to 15).\\
+Current metering signal & Existing providers indicate replacement or partnership context (up to 10).\\
+Energy/metering signals & Remote reading, heating-cost, and efficiency language indicates relevance (up to 15).\\
+Growth signals & Hiring and expansion suggest timing for a new solution (up to 5).\\
+Contactability & A named decision maker and deliverable personal email improve outreach (up to 15).\\
+\bottomrule
+\end{tabularx}
+Tier A starts at 70, Tier B at 45, and Tier C below 45; Strategic is reserved for large housing companies and cooperatives. Unknown values remain ``unknown'' and are never guessed.
+
+\section{Contacts}
+Decision makers were selected from Impressum and team pages, supported by search and Hunter. Email labels distinguish \texttt{hunter\_verified} (7), \texttt{hunter\_accept\_all} (1), and \texttt{mx\_ok\_unverified} (29); guessed addresses remain in a separate field. LinkedIn was not scraped directly: 34 matches used search-result evidence with surname and company anchors. The workbook contains 157 named contacts.
+
+\section{Data validation}
+The pipeline checks live company websites, rejects directory and redirect URLs as company websites, requires a Berlin postcode, removes duplicate domains and names, requires evidence quotes for KPI values, checks KPI source domains against the company domain, separates role mailboxes from personal contacts, and applies MX/Hunter checks. A dedicated audit stage and unit tests verify these rules. The final hard audit passed all implemented quality gates.
+
+\section{Automations and limitations}
+Stages can be run from one command, HTTP and model responses are cached for resumability, and LLM calls are logged. The workbook has 266 Leads, 25 Strategic, 99 Directory-only, 731 Excluded, and 7 Sources rows plus a README and Validation tab. Units are known for 33 private leads; many email records are domain-checked rather than individually verified. Some candidates remain excluded because a provable Berlin postcode was unavailable. LinkedIn evidence is search-only. The project uses public business information for B2B legitimate-interest outreach. Code was built with a GitHub Copilot harness; the agents use an LLM.
+\end{document}
