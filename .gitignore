@@ -12,6 +12,8 @@ credentials*.json
 share_bundle.zip
 data/out/
 data/raw/
+data/recall_seed.txt
+scratch_*.py
 docs/*.pdf
 docs/*.docx
 *.xlsx
