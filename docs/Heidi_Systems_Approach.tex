@@ -46,19 +46,32 @@ Contact finder & Select decision makers and resolve contact signals & Profiles/s
 There are three LLM agents. Crawling, deduplication, link checking, scoring, auditing, and export are deterministic code because repeatable rules are more reliable and cheaper for those tasks.
 
 \section{Tools and data sources}
+\small
+\renewcommand{\arraystretch}{1.22}
 \begin{tabularx}{\linewidth}{@{}p{2.8cm}p{3.2cm}Y@{}}
-\toprule Tool & Pipeline stage & Specific use and output\\\midrule
+\toprule
+\textbf{Tool} & \textbf{Pipeline stage} & \textbf{Specific use and output}\\
+\midrule
 Serper API & Discovery; contacts & Google Organic and Places results; search-result LinkedIn verification\\
+\addlinespace[2pt]\midrule
 Tavily API & Discovery & Supplementary Berlin property-management search results\\
+\addlinespace[2pt]\midrule
 Gelbe Seiten; Das Örtliche & Discovery & Directory candidates and phone-outreach records\\
+\addlinespace[2pt]\midrule
 Requests; BeautifulSoup & Crawl & Fetch and parse company pages, Impressum, team, service, and contact content\\
+\addlinespace[2pt]\midrule
 NVIDIA Nemotron LLM & Agents 1--3 & Candidate classification, KPI extraction with evidence, and contact reasoning\\
+\addlinespace[2pt]\midrule
 Hunter API; dnspython & Contacts & Personal email finding, verifier status, and MX-domain checks\\
+\addlinespace[2pt]\midrule
 ftfy; RapidFuzz & Cleaning & Mojibake repair, name matching, and duplicate detection at threshold 92\\
+\addlinespace[2pt]\midrule
 openpyxl; csv; gspread & Export & Excel/CSV workbook generation and optional Google Sheets publication\\
+\addlinespace[2pt]\midrule
 pytest & QA & Regression tests for known pipeline cases and validation helpers\\
 \bottomrule
 \end{tabularx}
+\normalsize
 
 \section{Qualifying KPIs and scoring}
 \begin{tabularx}{\linewidth}{@{}lY@{}}
